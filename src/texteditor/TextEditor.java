@@ -10,7 +10,7 @@ public class TextEditor {
       textEditorGui _edit = new textEditorGui();
       _edit.setBounds(0,0,700,700);
       _edit.setResizable(false);
-      _edit.setTitle("Mert Notepad");
+      _edit.setTitle("Mert Kaplan | mertkaplanblog.wordpress.com");
        _edit.setVisible(true);
       _edit.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
