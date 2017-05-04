@@ -1,12 +1,14 @@
 
 package texteditor;
-
+import java.util.regex.*;
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
@@ -17,6 +19,7 @@ import javax.swing.text.JTextComponent;
 public class textEditorGui extends javax.swing.JFrame {
 
     String filename;
+    String outputForResult;
     public textEditorGui() {
         initComponents();
     }
@@ -32,6 +35,11 @@ public class textEditorGui extends javax.swing.JFrame {
         textArea = new javax.swing.JTextArea();
         replaceField = new javax.swing.JTextField();
         replaceButton = new javax.swing.JButton();
+        regularExpessionTextField = new javax.swing.JTextField();
+        regularExpressionButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        resultTextArea = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newFile = new javax.swing.JMenuItem();
@@ -39,8 +47,6 @@ public class textEditorGui extends javax.swing.JFrame {
         saveFile = new javax.swing.JMenuItem();
         exitFile = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        cutText = new javax.swing.JMenuItem();
-        copyText = new javax.swing.JMenuItem();
         pasteText = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -64,22 +70,43 @@ public class textEditorGui extends javax.swing.JFrame {
             }
         });
 
+        regularExpessionTextField.setText("\\s[A-Za-z]{2,20}\\s");
+
+        regularExpressionButton.setText("Regular");
+        regularExpressionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regularExpressionButtonActionPerformed(evt);
+            }
+        });
+
+        resultTextArea.setColumns(20);
+        resultTextArea.setRows(5);
+        jScrollPane2.setViewportView(resultTextArea);
+
+        jLabel1.setText("Result:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane1)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(searchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(replaceField, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(replaceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(searchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(regularExpessionTextField, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(replaceField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(replaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(regularExpressionButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2))
+                    .addComponent(jLabel1))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -93,9 +120,16 @@ public class textEditorGui extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(replaceField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(replaceButton))
-                .addGap(31, 31, 31)
+                .addGap(4, 4, 4)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(regularExpessionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(regularExpressionButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(304, Short.MAX_VALUE))
+                .addGap(1, 1, 1)
+                .addComponent(jLabel1)
+                .addGap(2, 2, 2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
         );
 
         jMenu1.setText("File");
@@ -136,23 +170,7 @@ public class textEditorGui extends javax.swing.JFrame {
 
         jMenu2.setText("Other");
 
-        cutText.setText("Cut");
-        cutText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cutTextActionPerformed(evt);
-            }
-        });
-        jMenu2.add(cutText);
-
-        copyText.setText("Copy");
-        copyText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                copyTextActionPerformed(evt);
-            }
-        });
-        jMenu2.add(copyText);
-
-        pasteText.setText("Paste");
+        pasteText.setText("About");
         pasteText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pasteTextActionPerformed(evt);
@@ -234,16 +252,9 @@ public class textEditorGui extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitFileActionPerformed
 
-    private void cutTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cutTextActionPerformed
-
-    private void copyTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_copyTextActionPerformed
-
     private void pasteTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteTextActionPerformed
         // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null,"Created By Mert Kaplan - Istanbul Kultur University Notepad Project","Info",JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_pasteTextActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
@@ -263,6 +274,50 @@ public class textEditorGui extends javax.swing.JFrame {
         
     }//GEN-LAST:event_replaceButtonActionPerformed
 
+    String alinanexpression;
+    
+    private void regularExpressionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regularExpressionButtonActionPerformed
+        // TODO add your handling code here:
+        String a=regularExpessionTextField.getText();
+        String b=textArea.getText();
+        regexChecker(a, b);
+        resultTextArea.setText(alinanexpression);
+        
+    }//GEN-LAST:event_regularExpressionButtonActionPerformed
+
+        
+public void getTextAlinan(String _text)
+{
+    alinanexpression=_text;
+    
+}
+
+    
+    
+    public  void regexChecker(String theRegex, String str2Check){
+        String a;
+             Pattern checkRegex = Pattern.compile(theRegex);
+             Matcher regexMatcher = checkRegex.matcher( str2Check );
+            while ( regexMatcher.find() ){
+	            if (regexMatcher.group().length() != 0){
+//	                System.out.println( regexMatcher.group().trim() );
+//	                System.out.println( "Start Index: " + regexMatcher.start());
+//	                System.out.println( "Start Index: " + regexMatcher.end());
+               a = regexMatcher.group().trim()+" Start Index: " + regexMatcher.start()+" Start Index: " + regexMatcher.end();
+               
+                 System.out.println(a);
+                 getTextAlinan(a);
+                    }
+                    else
+                        a=" ";
+	        }
+	        System.out.println();
+                
+	    }
+    
+    
+
+    
   class myHighlighter extends DefaultHighlighter.DefaultHighlightPainter{
   
       public myHighlighter(Color color)
@@ -349,19 +404,22 @@ public class textEditorGui extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem copyText;
-    private javax.swing.JMenuItem cutText;
     private javax.swing.JMenuItem exitFile;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem newFile;
     private javax.swing.JMenuItem openFile;
     private javax.swing.JMenuItem pasteText;
+    private javax.swing.JTextField regularExpessionTextField;
+    private javax.swing.JButton regularExpressionButton;
     private javax.swing.JButton replaceButton;
     private javax.swing.JTextField replaceField;
+    private javax.swing.JTextArea resultTextArea;
     private javax.swing.JMenuItem saveFile;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
